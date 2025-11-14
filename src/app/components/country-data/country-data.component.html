@@ -1,0 +1,21 @@
+<div class="country-data-container">
+  <h2>Médailles Olympiques par Pays</h2>
+  <h3>Nombre de pays : {{ numberOfCountry }}</h3>
+  <div class="chart-container">
+    <ngx-charts-pie-chart
+      [view]="view"
+      [results]="pieChartData"
+      [gradient]="gradient"
+      [legend]="showLegend"
+      [labels]="showLabels"
+      [doughnut]="isDoughnut"
+      (select)="onSelect($event)"
+    >
+    </ngx-charts-pie-chart>
+  </div>
+
+  <div class="debug-section">
+    <h3>Données détaillées</h3>
+    <pre>{{ olympicData | json }}</pre>
+  </div>
+</div>
