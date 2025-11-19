@@ -1,21 +1,30 @@
-<div class="country-data-container">
-  <h2>Médailles Olympiques par Pays</h2>
-  <h3>Nombre de pays : {{ numberOfCountry }}</h3>
-  <div class="chart-container">
-    <ngx-charts-pie-chart
-      [view]="view"
-      [results]="pieChartData"
-      [gradient]="gradient"
-      [legend]="showLegend"
-      [labels]="showLabels"
-      [doughnut]="isDoughnut"
-      (select)="onSelect($event)"
-    >
-    </ngx-charts-pie-chart>
+<div
+  class="flex flex-col space-y-6 md:space-y-8 items-center w-full px-4 py-6 md:px-6 lg:px-8"
+>
+  <app-title [text]="'Médailles par Pays'"></app-title>
+
+  <div
+    *ngIf="!olympicData"
+    class="flex justify-center items-center min-h-[400px]"
+  >
+    <p class="text-gray-500 text-lg">Loading...</p>
   </div>
 
-  <div class="debug-section">
-    <h3>Données détaillées</h3>
-    <pre>{{ olympicData | json }}</pre>
-  </div>
+  <ng-container *ngIf="olympicData">
+    <div
+      class="flex flex-col gap-4 sm:flex-row w-full items-center justify-between"
+    >
+      <app-card [title]="'Nombre de JOs'" [value]="numberOfJos"> </app-card>
+      <app-card [title]="'Nombre de pays'" [value]="numberOfCountry">
+      </app-card>
+    </div>
+
+    <div class="w-full max-w-6xl">
+      <app-pie-chart
+        [data]="pieChartData"
+        [tooltipSuffix]="'médailles'"
+        (sliceClick)="onCountryClick($event)"
+      ></app-pie-chart>
+    </div>
+  </ng-container>
 </div>

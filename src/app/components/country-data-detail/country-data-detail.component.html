@@ -1,0 +1,27 @@
+<div *ngIf="!country" class="flex justify-center items-center min-h-[400px]">
+  <p class="text-gray-500 text-lg">Loading...</p>
+</div>
+
+<div *ngIf="country" class="flex flex-col space-y-6 items-center">
+  <app-title [text]="country.country"></app-title>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <app-card [title]="'Nombre d\'entrées'" [value]="numberOfEntries">
+    </app-card>
+
+    <app-card [title]="'Total médailles'" [value]="totalMedals"> </app-card>
+
+    <app-card [title]="'Total athlètes'" [value]="totalAthletes"> </app-card>
+  </div>
+
+  <div class="mt-6 w-full">
+    <app-area-chart
+      [series]="country.participations | participationToAreaChart"
+      [height]="400"
+      [xAxisTitle]="'Dates'"
+      [yAxisTitle]="'Médailles'"
+      [colors]="['#956065']"
+    >
+    </app-area-chart>
+  </div>
+</div>
