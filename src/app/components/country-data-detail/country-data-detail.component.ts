@@ -3,14 +3,19 @@ import { CommonModule } from '@angular/common';
 import { OlympicCountry } from '../../core/models/Olympic';
 import { TitleComponent } from '../title/title.component';
 import { CardComponent } from '../card/card.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CountryService } from 'src/app/core/services/country.service';
-import { Observable, of } from 'rxjs';
+import { AreaChartComponent } from '../area-chart/area-chart.component';
+import { ParticipationToAreaChartPipe } from '../../core/pipes/participation-to-area-chart.pipe';
 
 @Component({
   selector: 'app-country-data-detail',
   standalone: true,
-  imports: [CommonModule, TitleComponent, CardComponent],
+  imports: [
+    CommonModule,
+    TitleComponent,
+    CardComponent,
+    AreaChartComponent,
+    ParticipationToAreaChartPipe,
+  ],
   templateUrl: './country-data-detail.component.html',
   styleUrl: './country-data-detail.component.scss',
 })

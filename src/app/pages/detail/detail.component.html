@@ -2,7 +2,7 @@
   <!-- Bouton retour -->
   <button
     (click)="goBack()"
-    class="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+    class="mb-6 px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors flex items-center gap-2"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -20,6 +20,8 @@
   </button>
 
   <div>
-    <app-country-data-detail [country]="country$ | async"></app-country-data-detail>
+    <app-country-data-detail
+      [country]="country$ | async"
+    ></app-country-data-detail>
   </div>
 </div>

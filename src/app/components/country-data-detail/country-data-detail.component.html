@@ -1,6 +1,6 @@
-<div *ngIf="country" class="flex flex-col space-y-6">
+<div *ngIf="country" class="flex flex-col space-y-6 items-center">
   <app-title [text]="country.country"></app-title>
-
+  <div></div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <app-card [title]="'Nombre d\'entrées'" [value]="numberOfEntries">
     </app-card>
@@ -10,5 +10,14 @@
     <app-card [title]="'Total athlètes'" [value]="totalAthletes"> </app-card>
   </div>
 
-  <div class="mt-6"></div>
+  <div class="mt-6 w-full">
+    <app-area-chart
+      [series]="country.participations | participationToAreaChart"
+      [height]="400"
+      [xAxisTitle]="'Dates'"
+      [yAxisTitle]="'Médailles'"
+      [colors]="['#956065']"
+    >
+    </app-area-chart>
+  </div>
 </div>
