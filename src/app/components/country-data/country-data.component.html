@@ -1,15 +1,30 @@
-<div class="flex flex-col space-y-5 justify-between items-center">
+<div
+  class="flex flex-col space-y-6 md:space-y-8 items-center w-full px-4 py-6 md:px-6 lg:px-8"
+>
   <app-title [text]="'Médailles par Pays'"></app-title>
-  <div class="flex space-x-5 justify-between">
-    <app-card [title]="'Nombre de JOs'" [value]="numberOfJos"></app-card>
-    <app-card [title]="'Nombre de pays'" [value]="numberOfCountry"></app-card>
+
+  <div
+    *ngIf="!olympicData"
+    class="flex justify-center items-center min-h-[400px]"
+  >
+    <p class="text-gray-500 text-lg">Loading...</p>
   </div>
 
-  <div class="w-full">
-    <app-pie-chart
-      [data]="pieChartData"
-      [tooltipSuffix]="'médailles'"
-      (sliceClick)="onCountryClick($event)"
-    ></app-pie-chart>
-  </div>
+  <ng-container *ngIf="olympicData">
+    <div
+      class="flex flex-col gap-4 sm:flex-row w-full items-center justify-between"
+    >
+      <app-card [title]="'Nombre de JOs'" [value]="numberOfJos"> </app-card>
+      <app-card [title]="'Nombre de pays'" [value]="numberOfCountry">
+      </app-card>
+    </div>
+
+    <div class="w-full max-w-6xl">
+      <app-pie-chart
+        [data]="pieChartData"
+        [tooltipSuffix]="'médailles'"
+        (sliceClick)="onCountryClick($event)"
+      ></app-pie-chart>
+    </div>
+  </ng-container>
 </div>

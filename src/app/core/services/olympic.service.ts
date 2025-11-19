@@ -17,7 +17,6 @@ export class OlympicService {
     return this.http.get<OlympicCountry[]>(this.olympicUrl).pipe(
       tap((value: OlympicCountry[]) => this.olympics$.next(value)),
       catchError((error) => {
-        // Todo 404
         console.error('Error loading Olympic data:', error);
         this.olympics$.next(null);
         return throwError(() => error);
