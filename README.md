@@ -1,29 +1,83 @@
-# OlympicGamesStarter
+# Olympic Games Application
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.14.
+Application Angular pour visualiser les données des Jeux Olympiques avec des graphiques interactifs.
 
-Don't forget to install your node_modules before starting (`npm install`).
+## Prérequis
 
-## Development server
+- Node.js (version 18 ou supérieure)
+- npm (inclus avec Node.js)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Installation
 
-## Build
+1. Cloner le projet
+2. Installer les dépendances :
+```bash
+npm install --legacy-peer-deps
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Lancer l'application
 
-## Where to start
+```bash
+npm start
+```
 
-As you can see, an architecture has already been defined for the project. It is just a suggestion, you can choose to use your own. The predefined architecture includes (in addition to the default angular architecture) the following:
+L'application sera accessible sur `http://localhost:4200/`
 
-- `components` folder: contains every reusable components
-- `pages` folder: contains components used for routing
-- `core` folder: contains the business logic (`services` and `models` folders)
+## Architecture du projet
 
-I suggest you to start by understanding this starter code. Pay an extra attention to the `app-routing.module.ts` and the `olympic.service.ts`.
+```
+src/
+├── app/
+│   ├── components/          # Composants réutilisables
+│   │   ├── area-chart/      # Graphique de type area (ApexCharts)
+│   │   ├── pie-chart/       # Graphique circulaire (ApexCharts)
+│   │   ├── card/            # Carte d'affichage
+│   │   ├── title/           # Composant titre générique
+│   │   ├── country-data/    # Affichage des données pays (page d'accueil)
+│   │   └── country-data-detail/ # Détails d'un pays
+│   ├── pages/               # Pages de l'application
+│   │   ├── home/            # Page d'accueil
+│   │   ├── detail/          # Page de détails d'un pays
+│   │   └── not-found/       # Page 404
+│   ├── core/                # Logique métier
+│   │   ├── services/        # Services (Olympic, Country)
+│   │   ├── models/          # Interfaces TypeScript
+│   │   └── pipes/           # Pipes de transformation
+│   └── app-routing.module.ts # Configuration des routes
+└── assets/
+    └── mock/
+        └── olympic.json     # Données des JO
+```
 
-Once mastered, you should continue by creating the typescript interfaces inside the `models` folder. As you can see I already created two files corresponding to the data included inside the `olympic.json`. With your interfaces, improve the code by replacing every `any` by the corresponding interface.
+## Fonctionnalités
 
-You're now ready to implement the requested features.
+### Page d'accueil
+- Affichage du nombre de JOs et de pays participants
+- Graphique circulaire des médailles par pays
+- Navigation vers les détails au clic sur un pays
 
-Good luck!
+### Page de détails
+- Statistiques détaillées d'un pays (nombre d'entrées, total médailles, total athlètes)
+- Graphique area chart de l'évolution des médailles par année
+- Bouton retour vers la page d'accueil
+
+## Technologies utilisées
+
+- **Angular 18** - Framework frontend
+- **ApexCharts** - Bibliothèque de graphiques
+- **TailwindCSS** - Framework CSS
+- **RxJS** - Programmation réactive
+- **TypeScript** - Langage de programmation
+
+## Services
+
+- **OlympicService** : Chargement et gestion des données olympiques
+- **CountryService** : Récupération des détails d'un pays par ID
+
+## Build de production
+
+```bash
+npm run build
+```
+
+Les fichiers de production seront générés dans le dossier `dist/`.
