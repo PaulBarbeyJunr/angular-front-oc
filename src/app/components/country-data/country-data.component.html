@@ -9,6 +9,7 @@
     <app-pie-chart
       [data]="pieChartData"
       [tooltipSuffix]="'médailles'"
+      (sliceClick)="onCountryClick($event)"
     ></app-pie-chart>
   </div>
 </div>

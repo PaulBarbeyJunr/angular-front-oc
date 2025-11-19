@@ -1,0 +1,14 @@
+<div *ngIf="country" class="flex flex-col space-y-6">
+  <app-title [text]="country.country"></app-title>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <app-card [title]="'Nombre d\'entrées'" [value]="numberOfEntries">
+    </app-card>
+
+    <app-card [title]="'Total médailles'" [value]="totalMedals"> </app-card>
+
+    <app-card [title]="'Total athlètes'" [value]="totalAthletes"> </app-card>
+  </div>
+
+  <div class="mt-6"></div>
+</div>

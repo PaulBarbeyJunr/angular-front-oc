@@ -4,6 +4,8 @@ import {
   OnChanges,
   SimpleChanges,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
@@ -20,6 +22,7 @@ import {
 export interface PieChartData {
   label: string;
   value: number;
+  id?: number;
 }
 
 export type ChartOptions = {
@@ -47,6 +50,7 @@ export class PieChartComponent implements OnChanges {
   @Input() data: PieChartData[] = [];
   @Input() height: number = 400;
   @Input() tooltipSuffix: string = '';
+  @Output() sliceClick = new EventEmitter<number>();
 
   chartOptions!: Partial<ChartOptions>;
 
@@ -66,6 +70,15 @@ export class PieChartComponent implements OnChanges {
       chart: {
         type: 'pie',
         height: this.height,
+        events: {
+          dataPointSelection: (_event, _chartContext, config) => {
+            const selectedIndex = config.dataPointIndex;
+            const selectedData = this.data[selectedIndex];
+            if (selectedData && selectedData.id !== undefined) {
+              this.sliceClick.emit(selectedData.id);
+            }
+          },
+        },
       },
       labels: [],
       colors: ['#956065', '#793D52', '#89A1DB', '#9780A1', '#BFE0F1'],
@@ -123,6 +136,15 @@ export class PieChartComponent implements OnChanges {
       chart: {
         type: 'pie',
         height: this.height,
+        events: {
+          dataPointSelection: (_event, _chartContext, config) => {
+            const selectedIndex = config.dataPointIndex;
+            const selectedData = this.data[selectedIndex];
+            if (selectedData && selectedData.id !== undefined) {
+              this.sliceClick.emit(selectedData.id);
+            }
+          },
+        },
       },
     };
   }
