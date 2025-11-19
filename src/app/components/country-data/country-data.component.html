@@ -1,21 +1,14 @@
-<div class="country-data-container">
-  <h2>Médailles Olympiques par Pays</h2>
-  <h3>Nombre de pays : {{ numberOfCountry }}</h3>
-  <div class="chart-container">
-    <ngx-charts-pie-chart
-      [view]="view"
-      [results]="pieChartData"
-      [gradient]="gradient"
-      [legend]="showLegend"
-      [labels]="showLabels"
-      [doughnut]="isDoughnut"
-      (select)="onSelect($event)"
-    >
-    </ngx-charts-pie-chart>
+<div class="flex flex-col space-y-5 justify-between items-center bg-red-300">
+  <app-title [text]="'Médailles par Pays'"></app-title>
+  <div class="flex space-x-5 justify-between">
+    <app-card [title]="'Nombre de JOs'" [value]="numberOfJos"></app-card>
+    <app-card [title]="'Nombre de pays'" [value]="numberOfCountry"></app-card>
   </div>
 
-  <div class="debug-section">
-    <h3>Données détaillées</h3>
-    <pre>{{ olympicData | json }}</pre>
+  <div class="w-full">
+    <app-pie-chart
+      [data]="pieChartData"
+      [tooltipSuffix]="'médailles'"
+    ></app-pie-chart>
   </div>
 </div>
