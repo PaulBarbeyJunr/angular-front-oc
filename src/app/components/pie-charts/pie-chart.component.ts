@@ -85,10 +85,7 @@ export class PieChartComponent implements OnChanges {
       labels: [],
       colors: ['#956065', '#793D52', '#89A1DB', '#9780A1', '#BFE0F1'],
       dataLabels: {
-        enabled: true,
-        formatter: function (val: number) {
-          return val.toFixed(1) + '%';
-        },
+        enabled: false,
       },
       legend: {
         show: true,
