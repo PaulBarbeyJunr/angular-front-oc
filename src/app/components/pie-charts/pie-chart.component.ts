@@ -50,6 +50,8 @@ export class PieChartComponent implements OnChanges {
   @Input() data: PieChartData[] = [];
   @Input() height: number = 400;
   @Input() tooltipSuffix: string = '';
+  @Input() tooltipBackground: string = '#00b8db';
+  @Input() tooltipTextColor: string = '#ffffff';
   @Output() sliceClick = new EventEmitter<number>();
 
   chartOptions!: Partial<ChartOptions>;
@@ -83,10 +85,7 @@ export class PieChartComponent implements OnChanges {
       labels: [],
       colors: ['#956065', '#793D52', '#89A1DB', '#9780A1', '#BFE0F1'],
       dataLabels: {
-        enabled: true,
-        formatter: function (val: number) {
-          return val.toFixed(1) + '%';
-        },
+        enabled: false,
       },
       legend: {
         show: true,
@@ -96,10 +95,14 @@ export class PieChartComponent implements OnChanges {
       },
       tooltip: {
         enabled: true,
-        y: {
-          formatter: (val: number) => {
-            return val + (this.tooltipSuffix ? ' ' + this.tooltipSuffix : '');
-          },
+        custom: ({ series, seriesIndex, w }) => {
+          const label = w.globals.labels[seriesIndex];
+          const value = series[seriesIndex];
+          const suffix = this.tooltipSuffix ? ' ' + this.tooltipSuffix : '';
+          return `<div style="background: ${this.tooltipBackground}; color: ${this.tooltipTextColor}; padding: 8px 12px; border-radius: 4px; font-size: 14px; text-align: center;">
+            <strong>${label}</strong><br/>
+            <span style="display: inline-flex; align-items: center;"><img src="assets/icons/medal-white.svg" alt="medal" style="width: 16px; height: 16px; margin-right: 4px;" />${value}${suffix}</span>
+          </div>`;
         },
       },
       plotOptions: {
