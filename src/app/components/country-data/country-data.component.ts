@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { OlympicService } from '../../core/services/olympic.service';
 import { OlympicCountry } from '../../core/models/Olympic';
 import { TotalMedalsPipe } from '../../core/pipes/total-medals.pipe';
@@ -26,11 +28,12 @@ import { TitleComponent } from '../title/title.component';
   templateUrl: './country-data.component.html',
   styleUrl: './country-data.component.scss',
 })
-export class CountryDataComponent implements OnInit {
+export class CountryDataComponent implements OnInit, OnDestroy {
   olympicData: OlympicCountry[] | null = null;
   numberOfCountry?: number;
   numberOfJos?: number;
   pieChartData: PieChartData[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private olympicService: OlympicService,
@@ -40,16 +43,24 @@ export class CountryDataComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.olympicService.getOlympics().subscribe({
-      next: (data) => {
-        this.olympicData = data;
-        this.prepareData(data);
-        this.preparePieChartData(data);
-      },
-      error: (error) => {
-        console.error('Error fetching Olympic data:', error);
-      },
-    });
+    this.olympicService
+      .getOlympics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.olympicData = data;
+          this.prepareData(data);
+          this.preparePieChartData(data);
+        },
+        error: (error) => {
+          console.error('Error fetching Olympic data:', error);
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private prepareData(data: OlympicCountry[] | null): void {
