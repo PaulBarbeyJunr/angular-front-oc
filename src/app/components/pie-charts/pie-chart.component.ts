@@ -3,21 +3,14 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
-  ViewChild,
   Output,
   EventEmitter,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
-import {
-  ApexChart,
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ApexLegend,
-  ApexTooltip,
-  ApexPlotOptions,
-  ApexDataLabels,
-} from 'ng-apexcharts';
+import * as d3 from 'd3';
 
 export interface PieChartData {
   label: string;
@@ -25,130 +18,176 @@ export interface PieChartData {
   id?: number;
 }
 
-export type ChartOptions = {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  labels: string[];
-  responsive: ApexResponsive[];
-  legend: ApexLegend;
-  tooltip: ApexTooltip;
-  plotOptions: ApexPlotOptions;
-  dataLabels: ApexDataLabels;
-  colors: string[];
-};
-
 @Component({
   selector: 'app-pie-chart',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule],
   templateUrl: './pie-chart.component.html',
   styleUrl: './pie-chart.component.scss',
 })
-export class PieChartComponent implements OnChanges {
-  @ViewChild('chart') chart!: ChartComponent;
+export class PieChartComponent implements AfterViewInit, OnChanges {
+  @ViewChild('chartContainer') chartContainer!: ElementRef;
 
   @Input() data: PieChartData[] = [];
   @Input() height: number = 400;
   @Input() tooltipSuffix: string = '';
-  @Input() tooltipBackground: string = '#00b8db';
+  @Input() tooltipBackground: string = '#04838f';
   @Input() tooltipTextColor: string = '#ffffff';
   @Output() sliceClick = new EventEmitter<number>();
 
-  chartOptions!: Partial<ChartOptions>;
+  private svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | null =
+    null;
+  private colors = ['#956065', '#793D52', '#89A1DB', '#9780A1', '#BFE0F1'];
+  private initialized = false;
 
-  constructor() {
-    this.initChartOptions();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.data.length > 0) {
-      this.updateChartData();
+  ngAfterViewInit(): void {
+    this.initialized = true;
+    if (this.data.length > 0) {
+      this.createChart();
     }
   }
 
-  private initChartOptions(): void {
-    this.chartOptions = {
-      series: [],
-      chart: {
-        type: 'pie',
-        height: this.height,
-        events: {
-          dataPointSelection: (_event, _chartContext, config) => {
-            const selectedIndex = config.dataPointIndex;
-            const selectedData = this.data[selectedIndex];
-            if (selectedData && selectedData.id !== undefined) {
-              this.sliceClick.emit(selectedData.id);
-            }
-          },
-        },
-      },
-      labels: [],
-      colors: ['#956065', '#793D52', '#89A1DB', '#9780A1', '#BFE0F1'],
-      dataLabels: {
-        enabled: false,
-      },
-      legend: {
-        show: true,
-        position: 'bottom',
-        horizontalAlign: 'center',
-        fontSize: '14px',
-      },
-      tooltip: {
-        enabled: true,
-        custom: ({ series, seriesIndex, w }) => {
-          const label = w.globals.labels[seriesIndex];
-          const value = series[seriesIndex];
-          const suffix = this.tooltipSuffix ? ' ' + this.tooltipSuffix : '';
-          return `<div style="background: ${this.tooltipBackground}; color: ${this.tooltipTextColor}; padding: 8px 12px; border-radius: 4px; font-size: 14px; text-align: center;">
-            <strong>${label}</strong><br/>
-            <span style="display: inline-flex; align-items: center;"><img src="assets/icons/medal-white.svg" alt="medal" style="width: 16px; height: 16px; margin-right: 4px;" />${value}${suffix}</span>
-          </div>`;
-        },
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '0%',
-          },
-        },
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              height: 300,
-            },
-            legend: {
-              position: 'bottom',
-            },
-          },
-        },
-      ],
-    };
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] && this.data.length > 0 && this.initialized) {
+      this.createChart();
+    }
   }
 
-  private updateChartData(): void {
-    const labels = this.data.map((item) => item.label);
-    const series = this.data.map((item) => item.value);
+  private createChart(): void {
+    const element = this.chartContainer.nativeElement;
+    d3.select(element).selectAll('*').remove();
 
-    this.chartOptions = {
-      ...this.chartOptions,
-      series: series,
-      labels: labels,
-      chart: {
-        type: 'pie',
-        height: this.height,
-        events: {
-          dataPointSelection: (_event, _chartContext, config) => {
-            const selectedIndex = config.dataPointIndex;
-            const selectedData = this.data[selectedIndex];
-            if (selectedData && selectedData.id !== undefined) {
-              this.sliceClick.emit(selectedData.id);
-            }
-          },
-        },
-      },
-    };
+    const width = element.offsetWidth || 600;
+    const height = this.height;
+    const radius = Math.min(width, height) / 2 - 80;
+
+    this.svg = d3
+      .select(element)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    const g = this.svg
+      .append('g')
+      .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+    const pie = d3
+      .pie<PieChartData>()
+      .value((d) => d.value)
+      .sort(null);
+
+    const arc = d3
+      .arc<d3.PieArcDatum<PieChartData>>()
+      .innerRadius(0)
+      .outerRadius(radius);
+
+    const outerArc = d3
+      .arc<d3.PieArcDatum<PieChartData>>()
+      .innerRadius(radius * 1.1)
+      .outerRadius(radius * 1.1);
+
+    const colorScale = d3
+      .scaleOrdinal<string>()
+      .domain(this.data.map((d) => d.label))
+      .range(this.colors);
+
+    const tooltip = d3
+      .select(element)
+      .append('div')
+      .attr('class', 'pie-tooltip')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background', this.tooltipBackground)
+      .style('color', this.tooltipTextColor)
+      .style('padding', '8px 12px')
+      .style('border-radius', '4px')
+      .style('font-size', '14px')
+      .style('text-align', 'center')
+      .style('pointer-events', 'none')
+      .style('z-index', '1000');
+
+    const arcs = g
+      .selectAll('.arc')
+      .data(pie(this.data))
+      .enter()
+      .append('g')
+      .attr('class', 'arc');
+
+    arcs
+      .append('path')
+      .attr('d', arc)
+      .attr('fill', (d) => colorScale(d.data.label))
+      .attr('stroke', 'white')
+      .attr('stroke-width', 2)
+      .style('cursor', 'pointer')
+      .on('mouseover', (_, d) => {
+        const suffix = this.tooltipSuffix ? ' ' + this.tooltipSuffix : '';
+        tooltip
+          .html(
+            `<strong>${d.data.label}</strong><br/>
+            <span style="display: inline-flex; align-items: center;">
+              <img src="assets/icons/medal-white.svg" alt="medal" style="width: 16px; height: 16px; margin-right: 4px;" />
+              ${d.data.value}${suffix}
+            </span>`
+          )
+          .style('visibility', 'visible');
+      })
+      .on('mousemove', (event) => {
+        tooltip
+          .style('top', event.offsetY - 10 + 'px')
+          .style('left', event.offsetX + 10 + 'px');
+      })
+      .on('mouseout', () => {
+        tooltip.style('visibility', 'hidden');
+      })
+      .on('click', (_, d) => {
+        if (d.data.id !== undefined) {
+          this.sliceClick.emit(d.data.id);
+        }
+      });
+
+    g.selectAll('.polyline')
+      .data(pie(this.data))
+      .enter()
+      .append('polyline')
+      .attr('class', 'polyline')
+      .attr('stroke', '#333')
+      .attr('stroke-width', 1)
+      .attr('fill', 'none')
+      .attr('points', (d) => {
+        const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        const posA: [number, number] = [
+          Math.sin(midAngle) * (radius + 5),
+          -Math.cos(midAngle) * (radius + 5),
+        ];
+        const posB = outerArc.centroid(d);
+        const posC: [number, number] = [
+          radius * 1.25 * (midAngle < Math.PI ? 1 : -1),
+          posB[1],
+        ];
+        return [posA, posB, posC].map((p) => p.join(',')).join(' ');
+      });
+
+    g.selectAll('.label')
+      .data(pie(this.data))
+      .enter()
+      .append('text')
+      .attr('class', 'label')
+      .attr('transform', (d) => {
+        const pos = outerArc.centroid(d);
+        const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        pos[0] = radius * 1.3 * (midAngle < Math.PI ? 1 : -1);
+        return `translate(${pos})`;
+      })
+      .attr('text-anchor', (d) => {
+        const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        return midAngle < Math.PI ? 'start' : 'end';
+      })
+      .attr('dy', '0.35em')
+      .style('font-size', '12px')
+      .style('fill', '#333')
+      .text((d) => d.data.label);
   }
 }

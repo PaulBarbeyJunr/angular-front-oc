@@ -1,0 +1,27 @@
+.chart-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    overflow: visible;
+  }
+
+  .arc path {
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .polyline {
+    opacity: 0.5;
+  }
+
+  .label {
+    font-family: inherit;
+  }
+}
