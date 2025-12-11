@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -15,6 +16,7 @@ import { CountryDataComponent } from './components/country-data/country-data.com
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    RouterModule,
     NgApexchartsModule,
     CountryDataComponent,
   ],

@@ -1,0 +1,112 @@
+<div class="container mx-auto p-6">
+  <a
+    routerLink="/"
+    class="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    Retour
+  </a>
+
+  <app-title title="Statistiques Olympiques"></app-title>
+
+  <!-- Stats globales -->
+  <section class="mb-10" *ngIf="globalStats">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Vue d'ensemble</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <app-card
+        [title]="'Total Medailles'"
+        [value]="globalStats.totalMedals"
+      ></app-card>
+      <app-card
+        [title]="'Total Athletes'"
+        [value]="globalStats.totalAthletes"
+      ></app-card>
+      <app-card
+        [title]="'Pays participants'"
+        [value]="globalStats.totalCountries"
+      ></app-card>
+      <app-card
+        [title]="'Editions JO'"
+        [value]="globalStats.totalJOs"
+      ></app-card>
+    </div>
+
+    <div class="mt-6 p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg shadow">
+      <p class="text-lg text-gray-800">
+        <span class="font-bold">{{ globalStats.topCountry }}</span> domine avec
+        <span class="font-bold text-yellow-700">{{ globalStats.topCountryMedals }} medailles</span>
+      </p>
+      <p class="text-sm text-gray-600 mt-1">
+        Moyenne par pays : {{ globalStats.avgMedalsPerCountry }} medailles
+      </p>
+    </div>
+  </section>
+
+  <!-- Classement par pays -->
+  <section>
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Classement par pays</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-cyan-600 text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">#</th>
+            <th class="px-4 py-3 text-left">Pays</th>
+            <th class="px-4 py-3 text-center">Medailles</th>
+            <th class="px-4 py-3 text-center">Athletes</th>
+            <th class="px-4 py-3 text-center">Participations</th>
+            <th class="px-4 py-3 text-center">Moy. Medailles/JO</th>
+            <th class="px-4 py-3 text-center">Meilleure annee</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let stats of countryStats; let i = index"
+            class="border-b hover:bg-gray-50 transition-colors"
+            [class.bg-yellow-50]="i === 0"
+            [class.bg-gray-100]="i === 1"
+            [class.bg-orange-50]="i === 2"
+          >
+            <td class="px-4 py-3">
+              <span
+                *ngIf="i < 3"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold"
+                [class.bg-yellow-500]="i === 0"
+                [class.bg-gray-400]="i === 1"
+                [class.bg-orange-400]="i === 2"
+              >
+                {{ i + 1 }}
+              </span>
+              <span *ngIf="i >= 3">{{ i + 1 }}</span>
+            </td>
+            <td class="px-4 py-3 font-medium">
+              <a
+                [routerLink]="['/detail', stats.id]"
+                class="text-cyan-600 hover:underline"
+              >
+                {{ stats.country }}
+              </a>
+            </td>
+            <td class="px-4 py-3 text-center font-semibold">{{ stats.totalMedals }}</td>
+            <td class="px-4 py-3 text-center">{{ stats.totalAthletes }}</td>
+            <td class="px-4 py-3 text-center">{{ stats.participations }}</td>
+            <td class="px-4 py-3 text-center">{{ stats.avgMedalsPerJO }}</td>
+            <td class="px-4 py-3 text-center">
+              {{ stats.bestYear }} ({{ stats.bestYearMedals }})
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
